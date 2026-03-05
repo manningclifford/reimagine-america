@@ -172,13 +172,20 @@ export default function Home() {
           style={{ width: 38, height: 25, objectFit: "cover", borderRadius: 3, filter: themeId === "parchment" ? "none" : "invert(1)", flexShrink: 0 }}
         />
 
-        <div>
+        <div className="flex flex-col gap-0.5">
           <h1 className={`text-base font-bold tracking-tight leading-none ${theme.headerText}`}>
             Redraw America
           </h1>
-          <p className={`text-xs mt-0.5 ${theme.headerSubtext}`}>
-            What if the United States was drawn differently?
-          </p>
+          <div className="flex items-center gap-1">
+            <input
+              className={`text-xs bg-transparent border-b border-transparent hover:border-current focus:border-current focus:outline-none transition-colors ${theme.headerSubtext}`}
+              value={activeScenarioName}
+              onChange={(e) => handleScenarioRename(activeScenarioId, e.target.value)}
+              title="✏ Rename scenario"
+              style={{ minWidth: 0, width: `${Math.max(activeScenarioName.length, 10)}ch` }}
+            />
+            <span className={`text-xs opacity-40 ${theme.headerSubtext}`} title="Click name to rename">✏</span>
+          </div>
         </div>
 
         <div className="ml-auto flex items-center gap-2">

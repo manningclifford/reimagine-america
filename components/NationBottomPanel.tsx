@@ -191,7 +191,7 @@ export default function NationBottomPanel({ nations, unassignedFips, theme, onNa
                   {/* Remove */}
                   <td className="px-1 py-1">
                     {nations.length > 1 && (
-                      <button className="text-xs text-red-500/40 hover:text-red-400" onClick={() => onRemoveNation(s.id)} title="Remove nation">✕</button>
+                      <button className="text-sm font-bold text-red-400/60 hover:text-red-500 transition-colors" onClick={() => onRemoveNation(s.id)} title="Delete nation">✕</button>
                     )}
                   </td>
                 </tr>
