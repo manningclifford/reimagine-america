@@ -234,25 +234,24 @@ export default function Home() {
       <div className="flex flex-col flex-1 min-h-0">
         <div className="flex-1 min-h-0 relative">
 
-          {/* Map — always centered in the full viewport width */}
+          {/* Map — purely centered in the full area */}
           <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="flex items-start gap-4 w-full max-w-3xl">
-              <div className="flex-1 min-w-0">
-                <USMap
-                  stateColors={stateColors}
-                  stateNations={stateNations}
-                  onStateClick={handleStateClick}
-                  mapBg={theme.mapBg}
-                  mapStroke={theme.mapStroke}
-                />
-              </div>
-              {/* Hint to the right of map */}
-              <div className="flex-shrink-0 w-24 pt-2">
-                <p className={`text-xs leading-snug ${theme.hintText}`}>
-                  Click any state to cycle it through nations
-                </p>
-              </div>
+            <div className="w-full max-w-3xl">
+              <USMap
+                stateColors={stateColors}
+                stateNations={stateNations}
+                onStateClick={handleStateClick}
+                mapBg={theme.mapBg}
+                mapStroke={theme.mapStroke}
+              />
             </div>
+          </div>
+
+          {/* Hint — independently positioned to the right */}
+          <div className="absolute right-4 top-1/2 -translate-y-1/2 w-20 pointer-events-none">
+            <p className={`text-xs leading-snug ${theme.hintText}`}>
+              Click any state to cycle it through nations
+            </p>
           </div>
 
           {/* Sidebar floats over the map on the left */}
