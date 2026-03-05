@@ -76,15 +76,6 @@ const MODAL_THEME = {
     text: "#1c1710", muted: "#8b6030", subtext: "#3d2e1a", barTrack: "#e8d8b0",
     flagFilter: "none",
   },
-  slate: {
-    bg: "#0f172a", border: "#1e293b",
-    headerBg: "linear-gradient(135deg, #162032 0%, #0f172a 100%)",
-    headerBorder: "#1e293b", footerBg: "#080e1a", footerBorder: "#1e293b",
-    rowEven: "#0f172a", rowOdd: "#111827", theadBg: "#080e1a", theadBorder: "#1e293b",
-    mapBg: "#080e1a", mapFill: "#1e293b", mapStroke: "#0f172a",
-    text: "#f1f5f9", muted: "#475569", subtext: "#cbd5e1", barTrack: "#1e293b",
-    flagFilter: "invert(1)",
-  },
 };
 
 function Bar({ pct, color, value, track }: { pct: number; color: string; value: string; track: string }) {
@@ -254,6 +245,7 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
 
         {/* ── Footer ── */}
         <div style={{ padding: "6px 20px", background: t.footerBg, borderTop: `1px solid ${t.footerBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+          <span style={{ fontSize: 8, color: t.muted, letterSpacing: "0.12em" }}>★ REIMAGINE AMERICA ★</span>
           <div style={{ display: "flex", gap: 12 }}>
             {RACE_SEGMENTS.map(seg => (
               <span key={seg.key} style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 8, color: t.muted }}>
@@ -262,7 +254,6 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
               </span>
             ))}
           </div>
-          <span style={{ fontSize: 8, color: t.muted, letterSpacing: "0.12em" }}>★ REIMAGINE AMERICA ★</span>
         </div>
       </div>
     </div>

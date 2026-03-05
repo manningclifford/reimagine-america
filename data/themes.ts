@@ -1,4 +1,4 @@
-export type ThemeId = "dark" | "parchment" | "slate";
+export type ThemeId = "dark" | "parchment";
 
 export type Theme = {
   id: ThemeId;
@@ -92,35 +92,5 @@ export const THEMES: Record<ThemeId, Theme> = {
     legendUnassigned: "text-stone-400",
     resetBtn: "text-stone-500 hover:text-stone-700 border-amber-400 hover:border-stone-500",
     hintText: "text-stone-400",
-  },
-  slate: {
-    id: "slate",
-    name: "Slate",
-    root: "bg-slate-900 text-slate-100",
-    header: "bg-slate-900 border-b border-slate-700",
-    headerText: "text-white",
-    headerSubtext: "text-slate-400",
-    sidebar: "bg-slate-900",
-    sidebarBorder: "border-r border-slate-700",
-    sidebarHeading: "text-slate-400",
-    scenarioBtn: "text-slate-300 hover:bg-slate-700/60",
-    scenarioBtnActive: "bg-cyan-700 text-white",
-    scenarioBtnActiveSub: "text-cyan-200",
-    scenarioBtnSub: "text-slate-500",
-    nationCard: "border border-slate-600/50 bg-slate-800/40",
-    nationInput: "bg-transparent text-slate-200",
-    addNationBtn: "border-dashed border-slate-600 text-slate-500 hover:border-slate-400 hover:text-slate-300",
-    statsPanel: "bg-slate-900 border-l border-slate-700",
-    statsPanelBorder: "border-l border-slate-700",
-    statsCard: "border border-slate-600/60 bg-slate-800/60",
-    statsCardDivide: "divide-slate-700",
-    statLabel: "text-slate-400",
-    statValue: "text-slate-100",
-    mapBg: "#334155",
-    mapStroke: "#0f172a",
-    legendText: "text-slate-300",
-    legendUnassigned: "text-slate-500",
-    resetBtn: "text-slate-400 hover:text-slate-200 border-slate-600 hover:border-slate-400",
-    hintText: "text-slate-600",
   },
 };

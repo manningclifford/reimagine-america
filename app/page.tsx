@@ -22,7 +22,7 @@ function deepCloneNations(nations: Nation[]): Nation[] {
 }
 
 export default function Home() {
-  const [themeId, setThemeId] = useState<ThemeId>("dark");
+  const [themeId, setThemeId] = useState<ThemeId>("parchment");
   const [activeScenarioId, setActiveScenarioId] = useState<string>(SCENARIOS[0].id);
   const [scenarioNations, setScenarioNations] = useState<Record<string, Nation[]>>(
     () => Object.fromEntries(SCENARIOS.map((s) => [s.id, deepCloneNations(s.nations)]))
@@ -158,7 +158,7 @@ export default function Home() {
 
         <div className="ml-auto flex items-center gap-2">
           <div className="flex items-center gap-1">
-            {(["dark", "parchment", "slate"] as ThemeId[]).map((id) => (
+            {(["dark", "parchment"] as ThemeId[]).map((id) => (
               <button
                 key={id}
                 onClick={() => setThemeId(id)}
