@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import dynamic from "next/dynamic";
 import { SCENARIOS, Nation } from "@/data/scenarios";
 import { STATE_DATA } from "@/data/stateData";
@@ -29,9 +29,13 @@ export default function Home() {
   );
   const [leftOpen, setLeftOpen] = useState(true);
   const [statsOpen, setStatsOpen] = useState(false);
+  const [scenarioNames, setScenarioNames] = useState<Record<string, string>>(
+    () => Object.fromEntries(SCENARIOS.map((s) => [s.id, s.name]))
+  );
 
   const theme = THEMES[themeId];
   const nations = scenarioNations[activeScenarioId] ?? [];
+  const activeScenarioName = scenarioNames[activeScenarioId] ?? "";
 
   const stateColors = useMemo<Record<string, string>>(() => {
     const map: Record<string, string> = {};
@@ -114,6 +118,27 @@ export default function Home() {
     }));
   }, [activeScenarioId]);
 
+  const handleScenarioRename = useCallback((id: string, name: string) => {
+    setScenarioNames((prev) => ({ ...prev, [id]: name }));
+  }, []);
+
+  // Load shared state from URL hash on mount
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    try {
+      const parsed = JSON.parse(atob(hash));
+      if (parsed.name && parsed.nations) {
+        const id = `shared-${Date.now()}`;
+        setScenarioNames((prev) => ({ ...prev, [id]: parsed.name }));
+        setScenarioNations((prev) => ({ ...prev, [id]: parsed.nations }));
+        setActiveScenarioId(id);
+      }
+    } catch { /* ignore invalid hash */ }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleRandomize = useCallback(() => {
     setScenarioNations((prev) => {
       const current = prev[activeScenarioId];
@@ -149,7 +174,7 @@ export default function Home() {
 
         <div>
           <h1 className={`text-base font-bold tracking-tight leading-none ${theme.headerText}`}>
-            Reimagine America
+            Redraw America
           </h1>
           <p className={`text-xs mt-0.5 ${theme.headerSubtext}`}>
             What if the United States was drawn differently?
@@ -172,6 +197,17 @@ export default function Home() {
           </div>
 
           <button
+            onClick={() => {
+              const payload = btoa(JSON.stringify({ name: activeScenarioName, nations }));
+              const url = `${window.location.origin}/#${payload}`;
+              navigator.clipboard.writeText(url);
+            }}
+            className={`text-xs px-3 py-1.5 rounded border transition-colors ${theme.resetBtn}`}
+            title="Copy shareable link to clipboard"
+          >
+            🔗 Share
+          </button>
+          <button
             onClick={handleRandomize}
             className={`text-xs px-3 py-1.5 rounded border transition-colors ${theme.resetBtn}`}
             title="Randomly redistribute states"
@@ -193,8 +229,10 @@ export default function Home() {
           <aside className={`w-64 flex-shrink-0 overflow-y-auto p-3 ${theme.sidebar} ${theme.sidebarBorder}`}>
             <ScenarioPanel
               scenarios={SCENARIOS}
+              scenarioNames={scenarioNames}
               activeScenarioId={activeScenarioId}
               onSelectScenario={handleSelectScenario}
+              onScenarioRename={handleScenarioRename}
               nations={nations}
               onNationRename={handleNationRename}
               onAddNation={handleAddNation}
@@ -260,7 +298,7 @@ export default function Home() {
       {statsOpen && (
         <StatsModal
           nations={nations}
-          scenarioName={SCENARIOS.find(s => s.id === activeScenarioId)?.name ?? ""}
+          scenarioName={activeScenarioName}
           stateColors={stateColors}
           stateNations={stateNations}
           themeId={themeId}

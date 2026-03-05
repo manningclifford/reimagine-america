@@ -13,8 +13,16 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Reimagine America",
+  title: "Redraw America",
   description: "Explore alternative versions of the United States — redraw borders, create nations, see the stats.",
+  icons: {
+    icon: "https://freesvg.org/img/American_FlagINK.png",
+  },
+  openGraph: {
+    title: "Redraw America",
+    description: "What if the United States was drawn differently?",
+    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+  },
 };
 
 export default function RootLayout({

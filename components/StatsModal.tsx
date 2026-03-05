@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import dynamic from "next/dynamic";
+import { toPng } from "html-to-image";
 import { Nation } from "@/data/scenarios";
 import { STATE_DATA } from "@/data/stateData";
 import { ThemeId } from "@/data/themes";
@@ -56,7 +57,6 @@ const RACE_SEGMENTS = [
   { key: "raceOther"    as const, color: "#6b7280", label: "Other"    },
 ];
 
-// Per-theme colour tokens for the modal
 const MODAL_THEME = {
   dark: {
     bg: "#0a0f1e", border: "#1e2d4a",
@@ -65,6 +65,7 @@ const MODAL_THEME = {
     rowEven: "#0a0f1e", rowOdd: "#0d1526", theadBg: "#070d1a", theadBorder: "#1e2d4a",
     mapBg: "#070d1a", mapFill: "#1a2744", mapStroke: "#0a1020",
     text: "#ffffff", muted: "#4b6fa8", subtext: "#e2e8f0", barTrack: "#0f1b30",
+    btnBg: "#1e3a5f", btnText: "#93c5fd", btnBorder: "#2d5a8e",
     flagFilter: "invert(1)",
   },
   parchment: {
@@ -74,6 +75,7 @@ const MODAL_THEME = {
     rowEven: "#fdf6e3", rowOdd: "#f5ecd0", theadBg: "#e8d098", theadBorder: "#c8a96e",
     mapBg: "#f5ecd0", mapFill: "#d6cbb5", mapStroke: "#a89880",
     text: "#1c1710", muted: "#8b6030", subtext: "#3d2e1a", barTrack: "#e8d8b0",
+    btnBg: "#c8a96e", btnText: "#1c1710", btnBorder: "#a08040",
     flagFilter: "none",
   },
 };
@@ -93,6 +95,8 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
   const active = nations.filter(n => n.states.length > 0);
   const allStats = active.map(compute);
   const t = MODAL_THEME[themeId];
+  const cardRef = useRef<HTMLDivElement>(null);
+  const [copying, setCopying] = useState(false);
 
   const maxPop  = Math.max(...allStats.map(s => s.population), 1);
   const maxGdp  = Math.max(...allStats.map(s => s.gdp), 1);
@@ -105,6 +109,21 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
     return () => window.removeEventListener("keydown", fn);
   }, [onClose]);
 
+  async function handleCopyImage() {
+    if (!cardRef.current) return;
+    setCopying(true);
+    try {
+      const dataUrl = await toPng(cardRef.current, { pixelRatio: 2 });
+      const res = await fetch(dataUrl);
+      const blob = await res.blob();
+      await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+    } catch (err) {
+      console.error("Copy failed", err);
+    } finally {
+      setCopying(false);
+    }
+  }
+
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
@@ -112,10 +131,10 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
       onClick={onClose}
     >
       <div
+        ref={cardRef}
         onClick={e => e.stopPropagation()}
         style={{
           width: "calc(100vw - 24px)",
-          // height = auto so the card is only as tall as its content
           maxHeight: "calc(100vh - 24px)",
           display: "flex", flexDirection: "column",
           background: t.bg,
@@ -133,22 +152,28 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
               <img src="https://freesvg.org/img/American_FlagINK.png" alt="US Flag"
                 style={{ width: 42, height: 28, objectFit: "cover", borderRadius: 4, flexShrink: 0, filter: t.flagFilter }} />
               <div>
-                <p style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: t.muted, margin: 0 }}>Reimagine America</p>
+                <p style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: t.muted, margin: 0 }}>Redraw America</p>
                 <h2 style={{ fontSize: 22, fontWeight: 700, color: t.text, margin: 0, lineHeight: 1.2 }}>{scenarioName}</h2>
               </div>
             </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 9, color: t.muted, letterSpacing: "0.1em" }}>usa.clifford.works</span>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <span style={{ fontSize: 13, fontWeight: 600, color: t.muted, letterSpacing: "0.04em" }}>usa.clifford.works</span>
+              <button
+                onClick={(e) => { e.stopPropagation(); handleCopyImage(); }}
+                style={{ fontSize: 11, padding: "4px 10px", borderRadius: 6, background: t.btnBg, color: t.btnText, border: `1px solid ${t.btnBorder}`, cursor: "pointer", flexShrink: 0 }}
+              >
+                {copying ? "Copying…" : "📋 Copy image"}
+              </button>
               <button onClick={onClose} style={{ color: t.muted, fontSize: 22, lineHeight: 1, background: "none", border: "none", cursor: "pointer", padding: "0 4px" }}>×</button>
             </div>
           </div>
         </div>
 
-        {/* ── Body (scrollable) ── */}
+        {/* ── Body ── */}
         <div style={{ flex: 1, overflow: "auto", display: "flex", minHeight: 0 }}>
 
-          {/* Map column */}
-          <div style={{ flex: "0 0 280px", background: t.mapBg, padding: "12px 0 8px 12px", borderRight: `1px solid ${t.border}` }}>
+          {/* Map column — no legend */}
+          <div style={{ flex: "0 0 280px", background: t.mapBg, padding: "12px 0 12px 12px", borderRight: `1px solid ${t.border}` }}>
             <USMap
               stateColors={stateColors}
               stateNations={stateNations}
@@ -156,14 +181,6 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
               mapBg={t.mapFill}
               mapStroke={t.mapStroke}
             />
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 5, padding: "6px 10px 10px" }}>
-              {active.map(n => (
-                <span key={n.id} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 99, fontSize: 9, color: t.text, background: n.color + "33", border: `1px solid ${n.color}66` }}>
-                  <span style={{ width: 5, height: 5, borderRadius: "50%", backgroundColor: n.color, flexShrink: 0 }} />
-                  {n.name}
-                </span>
-              ))}
-            </div>
           </div>
 
           {/* Stats table */}
@@ -181,34 +198,28 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
               <tbody>
                 {allStats.map((s, i) => (
                   <tr key={s.id} style={{ borderBottom: `1px solid ${t.border}`, background: i % 2 === 0 ? t.rowEven : t.rowOdd }}>
-                    {/* Nation */}
                     <td style={{ padding: "12px 12px", whiteSpace: "nowrap" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                         <span style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: s.color, flexShrink: 0 }} />
                         <span style={{ fontWeight: 700, fontSize: 13, color: t.text }}>{s.name}</span>
                       </div>
                     </td>
-                    {/* States */}
                     <td style={{ padding: "12px 12px" }}>
                       <div style={{ fontSize: 13, fontWeight: 700, color: t.subtext, fontFamily: "monospace", textAlign: "center" }}>{s.stateCount}</div>
                     </td>
-                    {/* Population */}
                     <td style={{ padding: "12px 12px", minWidth: 140 }}>
                       <Bar pct={(s.population/maxPop)*100} color={s.color} value={fmtPop(s.population)} track={t.barTrack} />
                     </td>
-                    {/* GDP */}
                     <td style={{ padding: "12px 12px", minWidth: 140 }}>
                       <Bar pct={(s.gdp/maxGdp)*100} color={s.color} value={fmtGdp(s.gdp)} track={t.barTrack} />
                     </td>
-                    {/* GDP/cap */}
                     <td style={{ padding: "12px 12px", minWidth: 140 }}>
                       <Bar pct={(s.gdpPerCapita/maxCap)*100} color={s.color} value={fmtCap(s.gdpPerCapita)} track={t.barTrack} />
                     </td>
-                    {/* Area */}
                     <td style={{ padding: "12px 12px", minWidth: 130 }}>
                       <Bar pct={(s.areaSqMi/maxArea)*100} color={s.color} value={fmtArea(s.areaSqMi)} track={t.barTrack} />
                     </td>
-                    {/* Political lean — bar first, labels below */}
+                    {/* D/R — bar first, labels below */}
                     <td style={{ padding: "12px 12px", minWidth: 140 }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                         <div style={{ display: "flex", height: 16, borderRadius: 4, overflow: "hidden" }}>
@@ -221,7 +232,6 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
                         </div>
                       </div>
                     </td>
-                    {/* Race */}
                     <td style={{ padding: "12px 12px", minWidth: 160 }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
                         <div style={{ display: "flex", height: 16, borderRadius: 4, overflow: "hidden" }}>
@@ -245,7 +255,7 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
 
         {/* ── Footer ── */}
         <div style={{ padding: "6px 20px", background: t.footerBg, borderTop: `1px solid ${t.footerBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
-          <span style={{ fontSize: 8, color: t.muted, letterSpacing: "0.12em" }}>★ REIMAGINE AMERICA ★</span>
+          <span style={{ fontSize: 8, color: t.muted, letterSpacing: "0.12em" }}>★ REDRAW AMERICA ★</span>
           <div style={{ display: "flex", gap: 12 }}>
             {RACE_SEGMENTS.map(seg => (
               <span key={seg.key} style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 8, color: t.muted }}>

@@ -5,8 +5,10 @@ import { Theme } from "@/data/themes";
 
 type Props = {
   scenarios: Scenario[];
+  scenarioNames: Record<string, string>;
   activeScenarioId: string;
   onSelectScenario: (id: string) => void;
+  onScenarioRename: (id: string, name: string) => void;
   nations: Nation[];
   onNationRename: (id: string, name: string) => void;
   onAddNation: () => void;
@@ -14,9 +16,8 @@ type Props = {
   theme: Theme;
 };
 
-
 export default function ScenarioPanel({
-  scenarios, activeScenarioId, onSelectScenario,
+  scenarios, scenarioNames, activeScenarioId, onSelectScenario, onScenarioRename,
   nations, onNationRename, onAddNation, onRemoveNation, theme,
 }: Props) {
   return (
@@ -26,20 +27,31 @@ export default function ScenarioPanel({
           Scenarios
         </h2>
         <div className="space-y-1">
-          {scenarios.map((s) => (
-            <button
-              key={s.id}
-              onClick={() => onSelectScenario(s.id)}
-              className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
-                activeScenarioId === s.id ? theme.scenarioBtnActive : theme.scenarioBtn
-              }`}
-            >
-              <div className="font-medium">{s.name}</div>
-              <div className={`text-xs mt-0.5 leading-snug ${activeScenarioId === s.id ? theme.scenarioBtnActiveSub : theme.scenarioBtnSub}`}>
-                {s.description}
+          {scenarios.map((s) => {
+            const isActive = activeScenarioId === s.id;
+            return (
+              <div key={s.id} className={`rounded-lg px-3 py-2 text-sm transition-colors ${isActive ? theme.scenarioBtnActive : theme.scenarioBtn}`}>
+                {isActive ? (
+                  <input
+                    className={`w-full font-medium bg-transparent focus:outline-none ${isActive ? "" : ""}`}
+                    value={scenarioNames[s.id] ?? s.name}
+                    onChange={(e) => onScenarioRename(s.id, e.target.value)}
+                    placeholder="Scenario name"
+                  />
+                ) : (
+                  <button
+                    className="w-full text-left"
+                    onClick={() => onSelectScenario(s.id)}
+                  >
+                    <div className="font-medium">{scenarioNames[s.id] ?? s.name}</div>
+                    <div className={`text-xs mt-0.5 leading-snug ${theme.scenarioBtnSub}`}>
+                      {s.description}
+                    </div>
+                  </button>
+                )}
               </div>
-            </button>
-          ))}
+            );
+          })}
         </div>
       </div>
 

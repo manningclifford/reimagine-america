@@ -27,12 +27,12 @@ function remainder(used: string[]): string[] {
 
 const NORTH_STATES = [
   "23","33","50","25","44","09","36","34","42","10","17","18","39","26","55",
-  "27","19","29","20","31","38","46","08","56","30","16","53","41","06","32",
+  "27","19","20","31","38","46","08","56","30","16","53","41","06","32",
   "02","15","49",
 ];
 const SOUTH_STATES = [
   "24","11","51","54","21","47","37","45","13","12","01","28","22","05","48",
-  "40","35","04",
+  "40","35","04","29",
 ];
 
 export const SCENARIOS: Scenario[] = [
@@ -305,10 +305,10 @@ export const SCENARIOS: Scenario[] = [
   {
     id: "blank",
     name: "Blank Canvas",
-    description: "All states unassigned — paint your own nation from scratch",
+    description: "Start from a unified USA and redraw from scratch",
     nations: [
-      { id: "nation-1", name: "Nation Alpha", color: "#f43f5e", states: [] },
-      { id: "nation-2", name: "Nation Beta",  color: "#3b82f6", states: [] },
+      { id: "nation-1", name: "USA Today", color: "#3b82f6", states: ALL_FIPS },
+      { id: "nation-2", name: "Nation Beta",  color: "#f43f5e", states: [] },
       { id: "nation-3", name: "Nation Gamma", color: "#10b981", states: [] },
       { id: "nation-4", name: "Nation Delta", color: "#f59e0b", states: [] },
     ],
