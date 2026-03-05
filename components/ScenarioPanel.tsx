@@ -32,15 +32,17 @@ export default function ScenarioPanel({
             return (
               <div key={s.id} className={`rounded-lg px-3 py-2 text-sm transition-colors ${isActive ? theme.scenarioBtnActive : theme.scenarioBtn}`}>
                 {isActive ? (
-                  <input
-                    className={`w-full font-medium bg-transparent focus:outline-none`}
-                    value={scenarioNames[s.id] ?? s.name}
-                    onChange={(e) => onScenarioRename(s.id, e.target.value)}
-                    placeholder="Scenario name"
-                  />
-                  <div className={`text-xs mt-0.5 leading-snug ${theme.scenarioBtnActiveSub}`}>
-                    {s.description}
-                  </div>
+                  <>
+                    <input
+                      className={`w-full font-medium bg-transparent focus:outline-none`}
+                      value={scenarioNames[s.id] ?? s.name}
+                      onChange={(e) => onScenarioRename(s.id, e.target.value)}
+                      placeholder="Scenario name"
+                    />
+                    <div className={`text-xs mt-0.5 leading-snug ${theme.scenarioBtnActiveSub}`}>
+                      {s.description}
+                    </div>
+                  </>
                 ) : (
                   <button
                     className="w-full text-left"
