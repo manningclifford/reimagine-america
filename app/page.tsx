@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useCallback, useEffect } from "react";
+import { useState, useMemo, useCallback, useEffect, useRef } from "react";
 import dynamic from "next/dynamic";
 import { SCENARIOS, Nation } from "@/data/scenarios";
 import { STATE_DATA } from "@/data/stateData";
@@ -9,6 +9,7 @@ import ScenarioPanel from "@/components/ScenarioPanel";
 import NationBottomPanel from "@/components/NationBottomPanel";
 import StarTicker from "@/components/StarTicker";
 import StatsModal from "@/components/StatsModal";
+import MobileLayout from "@/components/MobileLayout";
 
 const USMap = dynamic(() => import("@/components/USMap"), { ssr: false });
 
@@ -151,6 +152,67 @@ export default function Home() {
     });
   }, [activeScenarioId]);
 
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia("(max-width: 767px)");
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
+
+  const handleStateAssign = useCallback((fips: string, nationId: string | null) => {
+    setScenarioNations((prev) => {
+      const updated = deepCloneNations(prev[activeScenarioId]);
+      for (const n of updated) n.states = n.states.filter(s => s !== fips);
+      if (nationId) {
+        const target = updated.find(n => n.id === nationId);
+        if (target) target.states.push(fips);
+      }
+      return { ...prev, [activeScenarioId]: updated };
+    });
+  }, [activeScenarioId]);
+
+  const bottomPanelRef = useRef<HTMLDivElement>(null);
+  const [bottomPanelHeight, setBottomPanelHeight] = useState(280);
+  useEffect(() => {
+    const el = bottomPanelRef.current;
+    if (!el) return;
+    const ro = new ResizeObserver(([entry]) => setBottomPanelHeight(entry.contentRect.height));
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, []);
+
+  const TICKER_H = 26;
+  const HEADER_H = 56;
+  const mapAreaHeight = `calc(100vh - ${HEADER_H}px - ${TICKER_H}px - ${bottomPanelHeight}px)`;
+
+  if (isMobile) {
+    return (
+      <MobileLayout
+        nations={nations}
+        scenarios={SCENARIOS}
+        scenarioNames={scenarioNames}
+        activeScenarioId={activeScenarioId}
+        theme={theme}
+        themeId={themeId}
+        stateColors={stateColors}
+        stateNations={stateNations}
+        unassignedCount={unassignedFips.length}
+        onNationRename={handleNationRename}
+        onNationColorChange={handleNationColorChange}
+        onAddNation={handleAddNation}
+        onRemoveNation={handleRemoveNation}
+        onStateAssign={handleStateAssign}
+        onStateClick={handleStateClick}
+        onSelectScenario={handleSelectScenario}
+        onResetScenario={handleResetScenario}
+        onRandomize={handleRandomize}
+        onThemeToggle={() => setThemeId(t => t === "dark" ? "parchment" : "dark")}
+      />
+    );
+  }
+
   return (
     <div className={`h-screen flex flex-col overflow-hidden ${theme.root}`}>
       {/* Header */}
@@ -237,46 +299,54 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Body: map fills full width, sidebar floats over it */}
-      <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex-1 min-h-0 relative">
-
-          {/* Map — purely centered in the full area */}
-          <div className="absolute inset-0 flex items-center justify-center p-4">
-            <div className="w-full max-w-3xl">
-              <USMap
-                stateColors={stateColors}
-                stateNations={stateNations}
-                onStateClick={handleStateClick}
-                mapBg={theme.mapBg}
-                mapStroke={theme.mapStroke}
-              />
-            </div>
+      {/* Map area — height tracks the bottom panel size */}
+      <div style={{ position: "relative", flexShrink: 0, height: mapAreaHeight, minHeight: 200 }}>
+        {/* Map centered inside this area */}
+        <div
+          style={{
+            position: "absolute", inset: 0,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: "1rem",
+            pointerEvents: "none",
+          }}
+        >
+          <div style={{ width: "min(calc(100vw - 3rem), 768px)", pointerEvents: "auto" }}>
+            <USMap
+              stateColors={stateColors}
+              stateNations={stateNations}
+              onStateClick={handleStateClick}
+              mapBg={theme.mapBg}
+              mapStroke={theme.mapStroke}
+            />
           </div>
-
-          {/* Hint — independently positioned to the right */}
-          <div className="absolute right-4 top-1/2 -translate-y-1/2 w-20 pointer-events-none">
+          {/* Hint to the right */}
+          <div style={{ width: 80, flexShrink: 0, paddingTop: 8, pointerEvents: "none" }}>
             <p className={`text-xs leading-snug ${theme.hintText}`}>
               Click any state to cycle it through nations
             </p>
           </div>
-
-          {/* Sidebar floats over the map on the left */}
-          {leftOpen && (
-            <aside className={`absolute left-0 top-0 h-full w-56 z-10 overflow-y-auto p-3 ${theme.sidebar} ${theme.sidebarBorder}`}>
-              <ScenarioPanel
-                scenarios={SCENARIOS}
-                scenarioNames={scenarioNames}
-                activeScenarioId={activeScenarioId}
-                onSelectScenario={handleSelectScenario}
-                onScenarioRename={handleScenarioRename}
-                theme={theme}
-              />
-            </aside>
-          )}
         </div>
 
-        {/* Bottom nation stats panel */}
+        {/* Sidebar — fixed, bottom tracks above the nation panel */}
+        {leftOpen && (
+          <aside className={`overflow-y-auto p-3 ${theme.sidebar} ${theme.sidebarBorder}`} style={{ position: "fixed", top: HEADER_H, bottom: TICKER_H + bottomPanelHeight, left: 0, width: 224, zIndex: 5 }}>
+            <ScenarioPanel
+              scenarios={SCENARIOS}
+              scenarioNames={scenarioNames}
+              activeScenarioId={activeScenarioId}
+              onSelectScenario={handleSelectScenario}
+              onScenarioRename={handleScenarioRename}
+              theme={theme}
+            />
+          </aside>
+        )}
+      </div>
+
+      {/* Spacer pushes bottom panel to the bottom */}
+      <div style={{ flex: 1 }} />
+
+      {/* Bottom panel — pinned to bottom, sits above sidebar */}
+      <div ref={bottomPanelRef} style={{ position: "relative", zIndex: 10 }}>
         <NationBottomPanel
           nations={nations}
           unassignedFips={unassignedFips}
