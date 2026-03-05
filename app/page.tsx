@@ -215,6 +215,13 @@ export default function Home() {
             🎲 Randomize
           </button>
           <button
+            onClick={() => setStatsOpen(true)}
+            className={`text-xs px-3 py-1.5 rounded border transition-colors ${theme.resetBtn}`}
+            title="Expand stats for screenshot"
+          >
+            ⛶ Expand stats
+          </button>
+          <button
             onClick={handleResetScenario}
             className={`text-xs px-3 py-1.5 rounded border transition-colors ${theme.resetBtn}`}
           >
@@ -239,27 +246,21 @@ export default function Home() {
             </aside>
           )}
 
-          <main className="flex-1 min-w-0 overflow-hidden flex flex-col items-center justify-center p-3 lg:p-5">
-            <p className={`mb-2 text-center text-xs ${theme.hintText}`}>
-              Click any state to cycle it through nations
-            </p>
-            <div className="w-full max-w-3xl">
-              <USMap
-                stateColors={stateColors}
-                stateNations={stateNations}
-                onStateClick={handleStateClick}
-                mapBg={theme.mapBg}
-                mapStroke={theme.mapStroke}
-              />
-            </div>
-            <div className="mt-2 flex items-center gap-3">
-              <button
-                onClick={() => setStatsOpen(true)}
-                className={`text-xs px-3 py-1.5 rounded border transition-colors ${theme.resetBtn}`}
-                title="Expand stats for screenshot"
-              >
-                ⛶ Expand stats
-              </button>
+          <main className="flex-1 min-w-0 overflow-hidden relative">
+            {/* Centred absolutely so the sidebar never shifts the map */}
+            <div className="absolute inset-0 flex flex-col items-center justify-center p-3 lg:p-5">
+              <p className={`mb-2 text-center text-xs ${theme.hintText}`}>
+                Click any state to cycle it through nations
+              </p>
+              <div className="w-full max-w-3xl">
+                <USMap
+                  stateColors={stateColors}
+                  stateNations={stateNations}
+                  onStateClick={handleStateClick}
+                  mapBg={theme.mapBg}
+                  mapStroke={theme.mapStroke}
+                />
+              </div>
             </div>
           </main>
         </div>
