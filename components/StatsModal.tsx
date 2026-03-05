@@ -67,14 +67,14 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4"
-      style={{ backgroundColor: "rgba(0,0,0,0.8)", backdropFilter: "blur(6px)" }}
+      style={{ backgroundColor: "rgba(0,0,0,0.85)", backdropFilter: "blur(6px)" }}
       onClick={onClose}
     >
-      {/* ── Share card ── fixed width so screenshotting is consistent */}
+      {/* ── Share card — fixed width for consistent screenshotting ── */}
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          width: 780,
+          width: 900,
           background: "#0a0f1e",
           border: "1px solid #1e2d4a",
           borderRadius: 16,
@@ -83,14 +83,14 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
           flexShrink: 0,
         }}
       >
-        {/* Header bar */}
-        <div style={{ background: "linear-gradient(135deg, #0f1f3d 0%, #0a1628 100%)", padding: "16px 20px 12px", borderBottom: "1px solid #1e2d4a" }}>
+        {/* Header */}
+        <div style={{ background: "linear-gradient(135deg, #0f1f3d 0%, #0a1628 100%)", padding: "14px 20px 11px", borderBottom: "1px solid #1e2d4a" }}>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span style={{ fontSize: 18, color: "#93c5fd" }}>★</span>
+              <span style={{ fontSize: 20, color: "#93c5fd" }}>★</span>
               <div>
                 <p style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "#4b6fa8", margin: 0 }}>Reimagine America</p>
-                <h2 style={{ fontSize: 18, fontWeight: 700, color: "#fff", margin: 0, lineHeight: 1.2 }}>{scenarioName}</h2>
+                <h2 style={{ fontSize: 20, fontWeight: 700, color: "#fff", margin: 0, lineHeight: 1.2 }}>{scenarioName}</h2>
               </div>
             </div>
             <div className="flex items-center gap-3">
@@ -100,10 +100,10 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
           </div>
         </div>
 
-        {/* Map + nation pills row */}
+        {/* Map + nation rows */}
         <div style={{ display: "flex", gap: 0 }}>
-          {/* Map */}
-          <div style={{ flex: "0 0 340px", background: "#070d1a", padding: "8px 0 4px 8px" }}>
+          {/* Map column */}
+          <div style={{ flex: "0 0 380px", background: "#070d1a", padding: "10px 0 6px 10px" }}>
             <USMap
               stateColors={stateColors}
               stateNations={stateNations}
@@ -112,58 +112,52 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
               mapStroke="#0a1020"
             />
             {/* Legend pills */}
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 4, padding: "4px 8px 8px" }}>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4, padding: "5px 10px 8px" }}>
               {active.map(n => (
-                <span key={n.id} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 7px", borderRadius: 99, fontSize: 9, color: "#fff", background: n.color + "33", border: `1px solid ${n.color}66` }}>
-                  <span style={{ width: 6, height: 6, borderRadius: "50%", backgroundColor: n.color, flexShrink: 0 }} />
+                <span key={n.id} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 99, fontSize: 9, color: "#fff", background: n.color + "33", border: `1px solid ${n.color}66` }}>
+                  <span style={{ width: 5, height: 5, borderRadius: "50%", backgroundColor: n.color, flexShrink: 0 }} />
                   {n.name}
                 </span>
               ))}
             </div>
           </div>
 
-          {/* Stat cards */}
-          <div style={{ flex: 1, padding: "10px 12px 10px 10px", display: "flex", flexDirection: "column", gap: 6, overflowY: "auto", maxHeight: 320 }}>
+          {/* Nation rows — one per nation, no scroll */}
+          <div style={{ flex: 1, padding: "10px 14px 10px 10px", display: "flex", flexDirection: "column", gap: 5, justifyContent: "center" }}>
             {allStats.map(s => (
               <div
                 key={s.id}
-                style={{ borderRadius: 10, overflow: "hidden", border: `1px solid ${s.color}33`, background: s.color + "0e", flexShrink: 0 }}
+                style={{ display: "flex", alignItems: "center", gap: 7, padding: "6px 10px", borderRadius: 8, border: `1px solid ${s.color}33`, background: s.color + "10", flexShrink: 0 }}
               >
-                {/* Nation name bar */}
-                <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "6px 10px", borderBottom: `1px solid ${s.color}33`, background: s.color + "22" }}>
-                  <span style={{ width: 8, height: 8, borderRadius: "50%", backgroundColor: s.color, flexShrink: 0 }} />
-                  <span style={{ fontWeight: 700, fontSize: 12, color: "#fff", flex: 1, minWidth: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{s.name}</span>
-                  <span style={{ fontSize: 9, color: s.color + "aa", flexShrink: 0 }}>{s.stateCount} states</span>
+                {/* Dot + name + state count */}
+                <span style={{ width: 7, height: 7, borderRadius: "50%", backgroundColor: s.color, flexShrink: 0 }} />
+                <span style={{ fontWeight: 700, fontSize: 11, color: "#fff", width: 90, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flexShrink: 0 }}>{s.name}</span>
+                <span style={{ fontSize: 8, color: s.color + "99", flexShrink: 0, width: 30 }}>{s.stateCount} st</span>
+
+                {/* Key stats */}
+                <div style={{ display: "flex", gap: 4, flex: 1 }}>
+                  {([["Pop", fmtPop(s.population)], ["GDP", fmtGdp(s.gdp)], ["/cap", fmtCap(s.gdpPerCapita)]] as [string,string][]).map(([l, v]) => (
+                    <div key={l} style={{ background: s.color + "18", borderRadius: 4, padding: "2px 6px", flexShrink: 0 }}>
+                      <span style={{ fontSize: 7, color: "#64748b" }}>{l} </span>
+                      <span style={{ fontSize: 10, fontWeight: 700, color: "#f1f5f9", fontFamily: "monospace" }}>{v}</span>
+                    </div>
+                  ))}
                 </div>
 
-                <div style={{ padding: "7px 10px", display: "flex", flexDirection: "column", gap: 5 }}>
-                  {/* Key numbers row */}
-                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 4 }}>
-                    {[
-                      ["Pop", fmtPop(s.population)],
-                      ["GDP", fmtGdp(s.gdp)],
-                      ["GDP/cap", fmtCap(s.gdpPerCapita)],
-                    ].map(([label, val]) => (
-                      <div key={label} style={{ background: s.color + "18", borderRadius: 6, padding: "4px 6px" }}>
-                        <div style={{ fontSize: 8, color: "#64748b", marginBottom: 1 }}>{label}</div>
-                        <div style={{ fontSize: 11, fontWeight: 700, color: "#f1f5f9", fontFamily: "monospace" }}>{val}</div>
-                      </div>
-                    ))}
+                {/* D/R bar */}
+                <div style={{ width: 64, flexShrink: 0 }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", fontSize: 7, marginBottom: 2 }}>
+                    <span style={{ color: "#60a5fa", fontWeight: 600 }}>D {s.demPct}%</span>
+                    <span style={{ color: "#f87171", fontWeight: 600 }}>R {100-s.demPct}%</span>
                   </div>
-
-                  {/* D/R bar */}
-                  <div>
-                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: 8, marginBottom: 2 }}>
-                      <span style={{ color: "#60a5fa", fontWeight: 600 }}>D {s.demPct}%</span>
-                      <span style={{ color: "#f87171", fontWeight: 600 }}>R {100-s.demPct}%</span>
-                    </div>
-                    <div style={{ display: "flex", height: 4, borderRadius: 99, overflow: "hidden" }}>
-                      <div style={{ width: `${s.demPct}%`, background: "#3b82f6" }} />
-                      <div style={{ width: `${100-s.demPct}%`, background: "#ef4444" }} />
-                    </div>
+                  <div style={{ display: "flex", height: 4, borderRadius: 99, overflow: "hidden" }}>
+                    <div style={{ width: `${s.demPct}%`, background: "#3b82f6" }} />
+                    <div style={{ width: `${100-s.demPct}%`, background: "#ef4444" }} />
                   </div>
+                </div>
 
-                  {/* Race bar */}
+                {/* Race bar */}
+                <div style={{ width: 48, flexShrink: 0 }}>
                   <div style={{ display: "flex", height: 4, borderRadius: 99, overflow: "hidden" }}>
                     {RACE_SEGMENTS.map(seg =>
                       s[seg.key] > 0 ? <div key={seg.key} style={{ width: `${s[seg.key]}%`, backgroundColor: seg.color }} /> : null
@@ -177,7 +171,7 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
 
         {/* Footer */}
         <div style={{ padding: "6px 20px", background: "#070d1a", borderTop: "1px solid #1e2d4a", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <div style={{ display: "flex", gap: 8 }}>
+          <div style={{ display: "flex", gap: 10 }}>
             {RACE_SEGMENTS.map(seg => (
               <span key={seg.key} style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 8, color: "#4b6fa8" }}>
                 <span style={{ width: 6, height: 6, borderRadius: 2, backgroundColor: seg.color }} />
