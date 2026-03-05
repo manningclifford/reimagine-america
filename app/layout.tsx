@@ -16,7 +16,7 @@ export const metadata: Metadata = {
   title: "Redraw America",
   description: "Explore alternative versions of the United States — redraw borders, create nations, see the stats.",
   icons: {
-    icon: "https://freesvg.org/img/American_FlagINK.png",
+    icon: "/flag.png",
   },
   openGraph: {
     title: "Redraw America",

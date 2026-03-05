@@ -167,7 +167,7 @@ export default function Home() {
 
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src="https://freesvg.org/img/American_FlagINK.png"
+          src="/flag.png"
           alt="US Flag"
           style={{ width: 38, height: 25, objectFit: "cover", borderRadius: 3, filter: themeId === "parchment" ? "none" : "invert(1)", flexShrink: 0 }}
         />

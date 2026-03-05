@@ -149,7 +149,7 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://freesvg.org/img/American_FlagINK.png" alt="US Flag"
+              <img src="/flag.png" alt="US Flag"
                 style={{ width: 42, height: 28, objectFit: "cover", borderRadius: 4, flexShrink: 0, filter: t.flagFilter }} />
               <div>
                 <p style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: t.muted, margin: 0 }}>Redraw America</p>
