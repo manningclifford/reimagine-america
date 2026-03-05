@@ -6,7 +6,7 @@ import { SCENARIOS, Nation } from "@/data/scenarios";
 import { STATE_DATA } from "@/data/stateData";
 import { THEMES, ThemeId } from "@/data/themes";
 import ScenarioPanel from "@/components/ScenarioPanel";
-import NationStats from "@/components/NationStats";
+import NationBottomPanel from "@/components/NationBottomPanel";
 import StarTicker from "@/components/StarTicker";
 import StatsModal from "@/components/StatsModal";
 
@@ -223,74 +223,57 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 3-column body */}
-      <div className="flex flex-1 min-h-0">
-        {leftOpen && (
-          <aside className={`w-64 flex-shrink-0 overflow-y-auto p-3 ${theme.sidebar} ${theme.sidebarBorder}`}>
-            <ScenarioPanel
-              scenarios={SCENARIOS}
-              scenarioNames={scenarioNames}
-              activeScenarioId={activeScenarioId}
-              onSelectScenario={handleSelectScenario}
-              onScenarioRename={handleScenarioRename}
-              nations={nations}
-              onNationRename={handleNationRename}
-              onAddNation={handleAddNation}
-              onRemoveNation={handleRemoveNation}
-              theme={theme}
-            />
-          </aside>
-        )}
+      {/* 2-column body + bottom panel */}
+      <div className="flex flex-col flex-1 min-h-0">
+        <div className="flex flex-1 min-h-0">
+          {leftOpen && (
+            <aside className={`w-56 flex-shrink-0 overflow-y-auto p-3 ${theme.sidebar} ${theme.sidebarBorder}`}>
+              <ScenarioPanel
+                scenarios={SCENARIOS}
+                scenarioNames={scenarioNames}
+                activeScenarioId={activeScenarioId}
+                onSelectScenario={handleSelectScenario}
+                onScenarioRename={handleScenarioRename}
+                theme={theme}
+              />
+            </aside>
+          )}
 
-        <main className="flex-1 min-w-0 overflow-y-auto flex flex-col items-center justify-start p-4 lg:p-6">
-          <div className="w-full max-w-3xl">
+          <main className="flex-1 min-w-0 overflow-hidden flex flex-col items-center justify-center p-3 lg:p-5">
             <p className={`mb-2 text-center text-xs ${theme.hintText}`}>
               Click any state to cycle it through nations
             </p>
-
-            <USMap
-              stateColors={stateColors}
-              stateNations={stateNations}
-              onStateClick={handleStateClick}
-              mapBg={theme.mapBg}
-              mapStroke={theme.mapStroke}
-            />
-
-            <div className="mt-4 flex flex-wrap gap-3 justify-center">
-              {nations.map((n) => (
-                <div key={n.id} className={`flex items-center gap-1.5 text-xs ${theme.legendText}`}>
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: n.color }} />
-                  {n.name}
-                  {n.states.length > 0 && (
-                    <span className={theme.legendUnassigned}>({n.states.length})</span>
-                  )}
-                </div>
-              ))}
-              {unassignedFips.length > 0 && (
-                <div className={`flex items-center gap-1.5 text-xs ${theme.legendUnassigned}`}>
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: theme.mapBg }} />
-                  Unassigned ({unassignedFips.length})
-                </div>
-              )}
+            <div className="w-full max-w-3xl">
+              <USMap
+                stateColors={stateColors}
+                stateNations={stateNations}
+                onStateClick={handleStateClick}
+                mapBg={theme.mapBg}
+                mapStroke={theme.mapStroke}
+              />
             </div>
-          </div>
-        </main>
+            <div className="mt-2 flex items-center gap-3">
+              <button
+                onClick={() => setStatsOpen(true)}
+                className={`text-xs px-3 py-1.5 rounded border transition-colors ${theme.resetBtn}`}
+                title="Expand stats for screenshot"
+              >
+                ⛶ Expand stats
+              </button>
+            </div>
+          </main>
+        </div>
 
-        <aside className={`w-80 flex-shrink-0 overflow-y-auto p-4 ${theme.statsPanel}`}>
-          <div className="flex items-center justify-between mb-4">
-            <h2 className={`text-xs font-semibold uppercase tracking-widest ${theme.sidebarHeading}`}>
-              Nation Stats
-            </h2>
-            <button
-              onClick={() => setStatsOpen(true)}
-              className={`text-xs px-2 py-1 rounded border transition-colors ${theme.resetBtn}`}
-              title="Expand for screenshot"
-            >
-              ⛶ Expand
-            </button>
-          </div>
-          <NationStats nations={nations} unassignedFips={unassignedFips} theme={theme} onNationColorChange={handleNationColorChange} />
-        </aside>
+        {/* Bottom nation stats panel */}
+        <NationBottomPanel
+          nations={nations}
+          unassignedFips={unassignedFips}
+          theme={theme}
+          onNationRename={handleNationRename}
+          onNationColorChange={handleNationColorChange}
+          onAddNation={handleAddNation}
+          onRemoveNation={handleRemoveNation}
+        />
       </div>
 
       <StarTicker themeId={themeId} />
