@@ -7,6 +7,8 @@ import { STATE_DATA } from "@/data/stateData";
 import { THEMES, ThemeId } from "@/data/themes";
 import ScenarioPanel from "@/components/ScenarioPanel";
 import NationStats from "@/components/NationStats";
+import StarTicker from "@/components/StarTicker";
+import StatsModal from "@/components/StatsModal";
 
 const USMap = dynamic(() => import("@/components/USMap"), { ssr: false });
 
@@ -26,6 +28,7 @@ export default function Home() {
     () => Object.fromEntries(SCENARIOS.map((s) => [s.id, deepCloneNations(s.nations)]))
   );
   const [leftOpen, setLeftOpen] = useState(true);
+  const [statsOpen, setStatsOpen] = useState(false);
 
   const theme = THEMES[themeId];
   const nations = scenarioNations[activeScenarioId] ?? [];
@@ -210,12 +213,33 @@ export default function Home() {
         </main>
 
         <aside className={`w-80 flex-shrink-0 overflow-y-auto p-4 ${theme.statsPanel}`}>
-          <h2 className={`text-xs font-semibold uppercase tracking-widest mb-4 ${theme.sidebarHeading}`}>
-            Nation Stats
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className={`text-xs font-semibold uppercase tracking-widest ${theme.sidebarHeading}`}>
+              Nation Stats
+            </h2>
+            <button
+              onClick={() => setStatsOpen(true)}
+              className={`text-xs px-2 py-1 rounded border transition-colors ${theme.resetBtn}`}
+              title="Expand for screenshot"
+            >
+              ⛶ Expand
+            </button>
+          </div>
           <NationStats nations={nations} unassignedFips={unassignedFips} theme={theme} onNationColorChange={handleNationColorChange} />
         </aside>
       </div>
+
+      <StarTicker themeId={themeId} />
+
+      {statsOpen && (
+        <StatsModal
+          nations={nations}
+          scenarioName={SCENARIOS.find(s => s.id === activeScenarioId)?.name ?? ""}
+          stateColors={stateColors}
+          stateNations={stateNations}
+          onClose={() => setStatsOpen(false)}
+        />
+      )}
     </div>
   );
 }

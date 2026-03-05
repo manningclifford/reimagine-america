@@ -20,3 +20,17 @@ body {
 * {
   box-sizing: border-box;
 }
+
+/* ── Star ticker ─────────────────────────────────────────────────────────── */
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+.ticker-track {
+  display: inline-block;
+  white-space: nowrap;
+  animation: ticker-scroll 25s linear infinite;
+  will-change: transform;
+}
