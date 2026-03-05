@@ -36,27 +36,6 @@ const SOUTH_STATES = [
 ];
 
 export const SCENARIOS: Scenario[] = [
-  // ── NORTH VS SOUTH ──────────────────────────────────────────────────────────
-  {
-    id: "north-south",
-    name: "North vs South",
-    description: "The Mason-Dixon line taken to its logical conclusion",
-    nations: [
-      {
-        id: "north",
-        name: "The Northern Republic",
-        color: "#3b82f6",
-        states: NORTH_STATES,
-      },
-      {
-        id: "south",
-        name: "The Southern Confederation",
-        color: "#ef4444",
-        states: SOUTH_STATES,
-      },
-    ],
-  },
-
   // ── FIVE NATIONS ────────────────────────────────────────────────────────────
   {
     id: "regional-blocs",
@@ -113,6 +92,27 @@ export const SCENARIOS: Scenario[] = [
         name: "Red America",
         color: "#dc2626",
         states: ["01","02","04","05","12","13","16","18","19","20","21","22","26","28","29","30","31","32","37","38","39","40","42","45","46","47","48","49","54","55","56"],
+      },
+    ],
+  },
+
+  // ── NORTH VS SOUTH ──────────────────────────────────────────────────────────
+  {
+    id: "north-south",
+    name: "North vs South",
+    description: "The Mason-Dixon line taken to its logical conclusion",
+    nations: [
+      {
+        id: "north",
+        name: "The Northern Republic",
+        color: "#3b82f6",
+        states: NORTH_STATES,
+      },
+      {
+        id: "south",
+        name: "The Southern Confederation",
+        color: "#ef4444",
+        states: SOUTH_STATES,
       },
     ],
   },
