@@ -90,8 +90,8 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
       <div
         onClick={e => e.stopPropagation()}
         style={{
-          width: "100%", maxWidth: 1200,
-          maxHeight: "calc(100vh - 32px)",
+          width: "calc(100vw - 24px)",
+          height: "calc(100vh - 24px)",
           display: "flex", flexDirection: "column",
           background: "#0a0f1e",
           border: "1px solid #1e2d4a",
@@ -105,7 +105,7 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://freesvg.org/img/American_FlagINK.png" alt="US Flag" style={{ width: 42, height: 28, objectFit: "cover", borderRadius: 4, flexShrink: 0 }} />
+              <img src="https://freesvg.org/img/American_FlagINK.png" alt="US Flag" style={{ width: 42, height: 28, objectFit: "cover", borderRadius: 4, flexShrink: 0, filter: "invert(1)" }} />
               <div>
                 <p style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "#4b6fa8", margin: 0 }}>Reimagine America</p>
                 <h2 style={{ fontSize: 22, fontWeight: 700, color: "#fff", margin: 0, lineHeight: 1.2 }}>{scenarioName}</h2>
