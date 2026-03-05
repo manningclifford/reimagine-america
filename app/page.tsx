@@ -144,7 +144,7 @@ export default function Home() {
         <img
           src="https://freesvg.org/img/American_FlagINK.png"
           alt="US Flag"
-          style={{ width: 38, height: 25, objectFit: "cover", borderRadius: 3, filter: "invert(1)", flexShrink: 0 }}
+          style={{ width: 38, height: 25, objectFit: "cover", borderRadius: 3, filter: themeId === "parchment" ? "none" : "invert(1)", flexShrink: 0 }}
         />
 
         <div>
@@ -263,6 +263,7 @@ export default function Home() {
           scenarioName={SCENARIOS.find(s => s.id === activeScenarioId)?.name ?? ""}
           stateColors={stateColors}
           stateNations={stateNations}
+          themeId={themeId}
           onClose={() => setStatsOpen(false)}
         />
       )}

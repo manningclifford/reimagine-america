@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import dynamic from "next/dynamic";
 import { Nation } from "@/data/scenarios";
 import { STATE_DATA } from "@/data/stateData";
+import { ThemeId } from "@/data/themes";
 
 const USMap = dynamic(() => import("@/components/USMap"), { ssr: false });
 
@@ -12,6 +13,7 @@ type Props = {
   scenarioName: string;
   stateColors: Record<string, string>;
   stateNations: Record<string, string>;
+  themeId: ThemeId;
   onClose: () => void;
 };
 
@@ -54,21 +56,52 @@ const RACE_SEGMENTS = [
   { key: "raceOther"    as const, color: "#6b7280", label: "Other"    },
 ];
 
-function Bar({ pct, color, value, label }: { pct: number; color: string; value: string; label?: string }) {
+// Per-theme colour tokens for the modal
+const MODAL_THEME = {
+  dark: {
+    bg: "#0a0f1e", border: "#1e2d4a",
+    headerBg: "linear-gradient(135deg, #0f1f3d 0%, #0a1628 100%)",
+    headerBorder: "#1e2d4a", footerBg: "#070d1a", footerBorder: "#1e2d4a",
+    rowEven: "#0a0f1e", rowOdd: "#0d1526", theadBg: "#070d1a", theadBorder: "#1e2d4a",
+    mapBg: "#070d1a", mapFill: "#1a2744", mapStroke: "#0a1020",
+    text: "#ffffff", muted: "#4b6fa8", subtext: "#e2e8f0", barTrack: "#0f1b30",
+    flagFilter: "invert(1)",
+  },
+  parchment: {
+    bg: "#fdf6e3", border: "#c8a96e",
+    headerBg: "linear-gradient(135deg, #f0ddb0 0%, #e8d098 100%)",
+    headerBorder: "#c8a96e", footerBg: "#ede0b0", footerBorder: "#c8a96e",
+    rowEven: "#fdf6e3", rowOdd: "#f5ecd0", theadBg: "#e8d098", theadBorder: "#c8a96e",
+    mapBg: "#f5ecd0", mapFill: "#d6cbb5", mapStroke: "#a89880",
+    text: "#1c1710", muted: "#8b6030", subtext: "#3d2e1a", barTrack: "#e8d8b0",
+    flagFilter: "none",
+  },
+  slate: {
+    bg: "#0f172a", border: "#1e293b",
+    headerBg: "linear-gradient(135deg, #162032 0%, #0f172a 100%)",
+    headerBorder: "#1e293b", footerBg: "#080e1a", footerBorder: "#1e293b",
+    rowEven: "#0f172a", rowOdd: "#111827", theadBg: "#080e1a", theadBorder: "#1e293b",
+    mapBg: "#080e1a", mapFill: "#1e293b", mapStroke: "#0f172a",
+    text: "#f1f5f9", muted: "#475569", subtext: "#cbd5e1", barTrack: "#1e293b",
+    flagFilter: "invert(1)",
+  },
+};
+
+function Bar({ pct, color, value, track }: { pct: number; color: string; value: string; track: string }) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-      {label && <div style={{ fontSize: 8, color: "#4b6fa8", textTransform: "uppercase", letterSpacing: "0.1em" }}>{label}</div>}
-      <div style={{ height: 16, borderRadius: 4, background: "#0f1b30", overflow: "hidden", position: "relative" }}>
-        <div style={{ width: `${Math.max(pct, 2)}%`, height: "100%", background: color, borderRadius: 4, transition: "width 0.3s" }} />
+      <div style={{ height: 16, borderRadius: 4, background: track, overflow: "hidden" }}>
+        <div style={{ width: `${Math.max(pct, 2)}%`, height: "100%", background: color, borderRadius: 4 }} />
       </div>
-      <div style={{ fontSize: 10, fontWeight: 700, color: "#e2e8f0", fontFamily: "monospace" }}>{value}</div>
+      <div style={{ fontSize: 10, fontWeight: 700, fontFamily: "monospace" }}>{value}</div>
     </div>
   );
 }
 
-export default function StatsModal({ nations, scenarioName, stateColors, stateNations, onClose }: Props) {
+export default function StatsModal({ nations, scenarioName, stateColors, stateNations, themeId, onClose }: Props) {
   const active = nations.filter(n => n.states.length > 0);
   const allStats = active.map(compute);
+  const t = MODAL_THEME[themeId];
 
   const maxPop  = Math.max(...allStats.map(s => s.population), 1);
   const maxGdp  = Math.max(...allStats.map(s => s.gdp), 1);
@@ -84,55 +117,57 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center"
-      style={{ backgroundColor: "rgba(0,0,0,0.9)", backdropFilter: "blur(8px)", padding: 16 }}
+      style={{ backgroundColor: "rgba(0,0,0,0.85)", backdropFilter: "blur(8px)", padding: 12 }}
       onClick={onClose}
     >
       <div
         onClick={e => e.stopPropagation()}
         style={{
           width: "calc(100vw - 24px)",
-          height: "calc(100vh - 24px)",
+          // height = auto so the card is only as tall as its content
+          maxHeight: "calc(100vh - 24px)",
           display: "flex", flexDirection: "column",
-          background: "#0a0f1e",
-          border: "1px solid #1e2d4a",
+          background: t.bg,
+          border: `1px solid ${t.border}`,
           borderRadius: 16,
           overflow: "hidden",
           boxShadow: "0 32px 80px rgba(0,0,0,0.8)",
         }}
       >
         {/* ── Header ── */}
-        <div style={{ background: "linear-gradient(135deg, #0f1f3d 0%, #0a1628 100%)", padding: "14px 20px 12px", borderBottom: "1px solid #1e2d4a", flexShrink: 0 }}>
+        <div style={{ background: t.headerBg, padding: "14px 20px 12px", borderBottom: `1px solid ${t.headerBorder}`, flexShrink: 0 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="https://freesvg.org/img/American_FlagINK.png" alt="US Flag" style={{ width: 42, height: 28, objectFit: "cover", borderRadius: 4, flexShrink: 0, filter: "invert(1)" }} />
+              <img src="https://freesvg.org/img/American_FlagINK.png" alt="US Flag"
+                style={{ width: 42, height: 28, objectFit: "cover", borderRadius: 4, flexShrink: 0, filter: t.flagFilter }} />
               <div>
-                <p style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: "#4b6fa8", margin: 0 }}>Reimagine America</p>
-                <h2 style={{ fontSize: 22, fontWeight: 700, color: "#fff", margin: 0, lineHeight: 1.2 }}>{scenarioName}</h2>
+                <p style={{ fontSize: 9, letterSpacing: "0.18em", textTransform: "uppercase", color: t.muted, margin: 0 }}>Reimagine America</p>
+                <h2 style={{ fontSize: 22, fontWeight: 700, color: t.text, margin: 0, lineHeight: 1.2 }}>{scenarioName}</h2>
               </div>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <span style={{ fontSize: 9, color: "#4b6fa8", letterSpacing: "0.1em" }}>usa.clifford.works</span>
-              <button onClick={onClose} style={{ color: "#4b6fa8", fontSize: 22, lineHeight: 1, background: "none", border: "none", cursor: "pointer", padding: "0 4px" }}>×</button>
+              <span style={{ fontSize: 9, color: t.muted, letterSpacing: "0.1em" }}>usa.clifford.works</span>
+              <button onClick={onClose} style={{ color: t.muted, fontSize: 22, lineHeight: 1, background: "none", border: "none", cursor: "pointer", padding: "0 4px" }}>×</button>
             </div>
           </div>
         </div>
 
-        {/* ── Scrollable body ── */}
-        <div style={{ flex: 1, overflow: "auto", display: "flex", gap: 0 }}>
+        {/* ── Body (scrollable) ── */}
+        <div style={{ flex: 1, overflow: "auto", display: "flex", minHeight: 0 }}>
 
           {/* Map column */}
-          <div style={{ flex: "0 0 300px", background: "#070d1a", padding: "12px 0 8px 12px", borderRight: "1px solid #1e2d4a" }}>
+          <div style={{ flex: "0 0 280px", background: t.mapBg, padding: "12px 0 8px 12px", borderRight: `1px solid ${t.border}` }}>
             <USMap
               stateColors={stateColors}
               stateNations={stateNations}
               onStateClick={() => {}}
-              mapBg="#1a2744"
-              mapStroke="#0a1020"
+              mapBg={t.mapFill}
+              mapStroke={t.mapStroke}
             />
             <div style={{ display: "flex", flexWrap: "wrap", gap: 5, padding: "6px 10px 10px" }}>
               {active.map(n => (
-                <span key={n.id} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 99, fontSize: 9, color: "#fff", background: n.color + "33", border: `1px solid ${n.color}66` }}>
+                <span key={n.id} style={{ display: "inline-flex", alignItems: "center", gap: 4, padding: "2px 8px", borderRadius: 99, fontSize: 9, color: t.text, background: n.color + "33", border: `1px solid ${n.color}66` }}>
                   <span style={{ width: 5, height: 5, borderRadius: "50%", backgroundColor: n.color, flexShrink: 0 }} />
                   {n.name}
                 </span>
@@ -144,9 +179,9 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
           <div style={{ flex: 1, overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
-                <tr style={{ background: "#070d1a", borderBottom: "1px solid #1e2d4a" }}>
+                <tr style={{ background: t.theadBg, borderBottom: `1px solid ${t.theadBorder}` }}>
                   {["Nation", "States", "Population", "GDP (Total)", "GDP / Capita", "Area", "Political Lean", "Racial Breakdown"].map(h => (
-                    <th key={h} style={{ padding: "10px 12px", fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", color: "#4b6fa8", textAlign: "left", whiteSpace: "nowrap" }}>
+                    <th key={h} style={{ padding: "10px 12px", fontSize: 9, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.12em", color: t.muted, textAlign: "left", whiteSpace: "nowrap" }}>
                       {h}
                     </th>
                   ))}
@@ -154,44 +189,44 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
               </thead>
               <tbody>
                 {allStats.map((s, i) => (
-                  <tr key={s.id} style={{ borderBottom: "1px solid #1e2d4a", background: i % 2 === 0 ? "#0a0f1e" : "#0d1526" }}>
+                  <tr key={s.id} style={{ borderBottom: `1px solid ${t.border}`, background: i % 2 === 0 ? t.rowEven : t.rowOdd }}>
                     {/* Nation */}
                     <td style={{ padding: "12px 12px", whiteSpace: "nowrap" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
                         <span style={{ width: 10, height: 10, borderRadius: "50%", backgroundColor: s.color, flexShrink: 0 }} />
-                        <span style={{ fontWeight: 700, fontSize: 13, color: "#fff" }}>{s.name}</span>
+                        <span style={{ fontWeight: 700, fontSize: 13, color: t.text }}>{s.name}</span>
                       </div>
                     </td>
                     {/* States */}
                     <td style={{ padding: "12px 12px" }}>
-                      <div style={{ fontSize: 13, fontWeight: 700, color: "#e2e8f0", fontFamily: "monospace", textAlign: "center" }}>{s.stateCount}</div>
+                      <div style={{ fontSize: 13, fontWeight: 700, color: t.subtext, fontFamily: "monospace", textAlign: "center" }}>{s.stateCount}</div>
                     </td>
                     {/* Population */}
                     <td style={{ padding: "12px 12px", minWidth: 140 }}>
-                      <Bar pct={(s.population/maxPop)*100} color={s.color} value={fmtPop(s.population)} />
+                      <Bar pct={(s.population/maxPop)*100} color={s.color} value={fmtPop(s.population)} track={t.barTrack} />
                     </td>
                     {/* GDP */}
                     <td style={{ padding: "12px 12px", minWidth: 140 }}>
-                      <Bar pct={(s.gdp/maxGdp)*100} color={s.color} value={fmtGdp(s.gdp)} />
+                      <Bar pct={(s.gdp/maxGdp)*100} color={s.color} value={fmtGdp(s.gdp)} track={t.barTrack} />
                     </td>
                     {/* GDP/cap */}
                     <td style={{ padding: "12px 12px", minWidth: 140 }}>
-                      <Bar pct={(s.gdpPerCapita/maxCap)*100} color={s.color} value={fmtCap(s.gdpPerCapita)} />
+                      <Bar pct={(s.gdpPerCapita/maxCap)*100} color={s.color} value={fmtCap(s.gdpPerCapita)} track={t.barTrack} />
                     </td>
                     {/* Area */}
                     <td style={{ padding: "12px 12px", minWidth: 130 }}>
-                      <Bar pct={(s.areaSqMi/maxArea)*100} color={s.color} value={fmtArea(s.areaSqMi)} />
+                      <Bar pct={(s.areaSqMi/maxArea)*100} color={s.color} value={fmtArea(s.areaSqMi)} track={t.barTrack} />
                     </td>
-                    {/* Political lean */}
+                    {/* Political lean — bar first, labels below */}
                     <td style={{ padding: "12px 12px", minWidth: 140 }}>
                       <div style={{ display: "flex", flexDirection: "column", gap: 3 }}>
-                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9 }}>
-                          <span style={{ color: "#60a5fa", fontWeight: 700 }}>D {s.demPct}%</span>
-                          <span style={{ color: "#f87171", fontWeight: 700 }}>R {100-s.demPct}%</span>
-                        </div>
                         <div style={{ display: "flex", height: 16, borderRadius: 4, overflow: "hidden" }}>
                           <div style={{ width: `${s.demPct}%`, background: "#3b82f6" }} />
                           <div style={{ width: `${100-s.demPct}%`, background: "#ef4444" }} />
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between", fontSize: 9 }}>
+                          <span style={{ color: "#60a5fa", fontWeight: 700 }}>D {s.demPct}%</span>
+                          <span style={{ color: "#f87171", fontWeight: 700 }}>R {100-s.demPct}%</span>
                         </div>
                       </div>
                     </td>
@@ -218,16 +253,16 @@ export default function StatsModal({ nations, scenarioName, stateColors, stateNa
         </div>
 
         {/* ── Footer ── */}
-        <div style={{ padding: "6px 20px", background: "#070d1a", borderTop: "1px solid #1e2d4a", display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
+        <div style={{ padding: "6px 20px", background: t.footerBg, borderTop: `1px solid ${t.footerBorder}`, display: "flex", justifyContent: "space-between", alignItems: "center", flexShrink: 0 }}>
           <div style={{ display: "flex", gap: 12 }}>
             {RACE_SEGMENTS.map(seg => (
-              <span key={seg.key} style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 8, color: "#4b6fa8" }}>
+              <span key={seg.key} style={{ display: "flex", alignItems: "center", gap: 3, fontSize: 8, color: t.muted }}>
                 <span style={{ width: 7, height: 7, borderRadius: 2, backgroundColor: seg.color }} />
                 {seg.label}
               </span>
             ))}
           </div>
-          <span style={{ fontSize: 8, color: "#2d4470", letterSpacing: "0.12em" }}>★ REIMAGINE AMERICA ★</span>
+          <span style={{ fontSize: 8, color: t.muted, letterSpacing: "0.12em" }}>★ REIMAGINE AMERICA ★</span>
         </div>
       </div>
     </div>
