@@ -230,11 +230,34 @@ export default function Home() {
         </div>
       </header>
 
-      {/* 2-column body + bottom panel */}
+      {/* Body: map fills full width, sidebar floats over it */}
       <div className="flex flex-col flex-1 min-h-0">
-        <div className="flex flex-1 min-h-0">
+        <div className="flex-1 min-h-0 relative">
+
+          {/* Map — always centered in the full viewport width */}
+          <div className="absolute inset-0 flex items-center justify-center p-4">
+            <div className="flex items-start gap-4 w-full max-w-3xl">
+              <div className="flex-1 min-w-0">
+                <USMap
+                  stateColors={stateColors}
+                  stateNations={stateNations}
+                  onStateClick={handleStateClick}
+                  mapBg={theme.mapBg}
+                  mapStroke={theme.mapStroke}
+                />
+              </div>
+              {/* Hint to the right of map */}
+              <div className="flex-shrink-0 w-24 pt-2">
+                <p className={`text-xs leading-snug ${theme.hintText}`}>
+                  Click any state to cycle it through nations
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Sidebar floats over the map on the left */}
           {leftOpen && (
-            <aside className={`w-56 flex-shrink-0 overflow-y-auto p-3 ${theme.sidebar} ${theme.sidebarBorder}`}>
+            <aside className={`absolute left-0 top-0 h-full w-56 z-10 overflow-y-auto p-3 ${theme.sidebar} ${theme.sidebarBorder}`}>
               <ScenarioPanel
                 scenarios={SCENARIOS}
                 scenarioNames={scenarioNames}
@@ -245,24 +268,6 @@ export default function Home() {
               />
             </aside>
           )}
-
-          <main className="flex-1 min-w-0 overflow-hidden relative">
-            {/* Centred absolutely so the sidebar never shifts the map */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-3 lg:p-5">
-              <p className={`mb-2 text-center text-xs ${theme.hintText}`}>
-                Click any state to cycle it through nations
-              </p>
-              <div className="w-full max-w-3xl">
-                <USMap
-                  stateColors={stateColors}
-                  stateNations={stateNations}
-                  onStateClick={handleStateClick}
-                  mapBg={theme.mapBg}
-                  mapStroke={theme.mapStroke}
-                />
-              </div>
-            </div>
-          </main>
         </div>
 
         {/* Bottom nation stats panel */}
