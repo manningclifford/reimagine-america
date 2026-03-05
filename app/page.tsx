@@ -168,7 +168,6 @@ export default function Home() {
               onSelectScenario={handleSelectScenario}
               nations={nations}
               onNationRename={handleNationRename}
-              onNationColorChange={handleNationColorChange}
               onAddNation={handleAddNation}
               onRemoveNation={handleRemoveNation}
               theme={theme}
@@ -214,7 +213,7 @@ export default function Home() {
           <h2 className={`text-xs font-semibold uppercase tracking-widest mb-4 ${theme.sidebarHeading}`}>
             Nation Stats
           </h2>
-          <NationStats nations={nations} unassignedFips={unassignedFips} theme={theme} />
+          <NationStats nations={nations} unassignedFips={unassignedFips} theme={theme} onNationColorChange={handleNationColorChange} />
         </aside>
       </div>
     </div>

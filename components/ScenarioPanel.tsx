@@ -9,22 +9,15 @@ type Props = {
   onSelectScenario: (id: string) => void;
   nations: Nation[];
   onNationRename: (id: string, name: string) => void;
-  onNationColorChange: (id: string, color: string) => void;
   onAddNation: () => void;
   onRemoveNation: (id: string) => void;
   theme: Theme;
 };
 
-const PRESET_COLORS = [
-  "#f43f5e","#ef4444","#f97316","#f59e0b","#eab308",
-  "#84cc16","#22c55e","#10b981","#14b8a6","#06b6d4",
-  "#0ea5e9","#3b82f6","#6366f1","#8b5cf6","#a855f7",
-  "#d946ef","#ec4899","#6b7280",
-];
 
 export default function ScenarioPanel({
   scenarios, activeScenarioId, onSelectScenario,
-  nations, onNationRename, onNationColorChange, onAddNation, onRemoveNation, theme,
+  nations, onNationRename, onAddNation, onRemoveNation, theme,
 }: Props) {
   return (
     <div className="flex flex-col gap-5">
@@ -61,7 +54,6 @@ export default function ScenarioPanel({
               nation={nation}
               totalNations={nations.length}
               onRename={(name) => onNationRename(nation.id, name)}
-              onColorChange={(c) => onNationColorChange(nation.id, c)}
               onRemove={() => onRemoveNation(nation.id)}
               theme={theme}
             />
@@ -81,41 +73,25 @@ export default function ScenarioPanel({
   );
 }
 
-function NationEditor({ nation, totalNations, onRename, onColorChange, onRemove, theme }: {
+function NationEditor({ nation, totalNations, onRename, onRemove, theme }: {
   nation: Nation;
   totalNations: number;
   onRename: (name: string) => void;
-  onColorChange: (color: string) => void;
   onRemove: () => void;
   theme: Theme;
 }) {
   return (
-    <div className={`rounded-lg border p-2 space-y-2 ${theme.nationCard}`}>
-      <div className="flex items-center gap-2">
-        <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: nation.color }} />
-        <input
-          className={`flex-1 text-sm focus:outline-none min-w-0 ${theme.nationInput}`}
-          value={nation.name}
-          onChange={(e) => onRename(e.target.value)}
-          placeholder="Nation name"
-        />
-        <span className={`text-xs flex-shrink-0 ${theme.sidebarHeading}`}>{nation.states.length}</span>
-      </div>
-      <div className="flex flex-wrap gap-1">
-        {PRESET_COLORS.map((c) => (
-          <button
-            key={c}
-            className={`w-4 h-4 rounded-full hover:scale-110 transition-transform flex-shrink-0 ${nation.color === c ? "ring-2 ring-offset-1 ring-current scale-110" : ""}`}
-            style={{ backgroundColor: c }}
-            onClick={() => onColorChange(c)}
-            title={c}
-          />
-        ))}
-      </div>
+    <div className={`rounded-lg border px-2 py-1.5 flex items-center gap-2 ${theme.nationCard}`}>
+      <span className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: nation.color }} />
+      <input
+        className={`flex-1 text-sm focus:outline-none min-w-0 bg-transparent ${theme.nationInput}`}
+        value={nation.name}
+        onChange={(e) => onRename(e.target.value)}
+        placeholder="Nation name"
+      />
+      <span className={`text-xs flex-shrink-0 ${theme.statLabel}`}>{nation.states.length}</span>
       {totalNations > 1 && (
-        <button className="text-xs text-red-500/70 hover:text-red-400" onClick={onRemove}>
-          Remove
-        </button>
+        <button className="text-xs text-red-500/50 hover:text-red-400 flex-shrink-0" onClick={onRemove} title="Remove">✕</button>
       )}
     </div>
   );
