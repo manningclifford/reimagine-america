@@ -114,6 +114,18 @@ export default function Home() {
     }));
   }, [activeScenarioId]);
 
+  const handleRandomize = useCallback(() => {
+    setScenarioNations((prev) => {
+      const current = prev[activeScenarioId];
+      const allFips = Object.keys(STATE_DATA);
+      const shuffled = [...allFips].sort(() => Math.random() - 0.5);
+      const updated = deepCloneNations(current);
+      updated.forEach((n) => (n.states = []));
+      shuffled.forEach((fips, i) => { updated[i % updated.length].states.push(fips); });
+      return { ...prev, [activeScenarioId]: updated };
+    });
+  }, [activeScenarioId]);
+
   return (
     <div className={`h-screen flex flex-col overflow-hidden ${theme.root}`}>
       {/* Header */}
@@ -127,6 +139,13 @@ export default function Home() {
             <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
+
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="https://freesvg.org/img/American_FlagINK.png"
+          alt="US Flag"
+          style={{ width: 38, height: 25, objectFit: "cover", borderRadius: 3, filter: "invert(1)", flexShrink: 0 }}
+        />
 
         <div>
           <h1 className={`text-base font-bold tracking-tight leading-none ${theme.headerText}`}>
@@ -152,6 +171,13 @@ export default function Home() {
             ))}
           </div>
 
+          <button
+            onClick={handleRandomize}
+            className={`text-xs px-3 py-1.5 rounded border transition-colors ${theme.resetBtn}`}
+            title="Randomly redistribute states"
+          >
+            🎲 Randomize
+          </button>
           <button
             onClick={handleResetScenario}
             className={`text-xs px-3 py-1.5 rounded border transition-colors ${theme.resetBtn}`}
