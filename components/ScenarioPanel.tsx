@@ -25,12 +25,16 @@ export default function ScenarioPanel({ scenarios, scenarioNames, activeScenario
             <div key={s.id} className={`rounded-lg px-3 py-2 text-sm transition-colors ${isActive ? theme.scenarioBtnActive : theme.scenarioBtn}`}>
               {isActive ? (
                 <>
-                  <input
-                    className="w-full font-medium bg-transparent focus:outline-none"
-                    value={scenarioNames[s.id] ?? s.name}
-                    onChange={(e) => onScenarioRename(s.id, e.target.value)}
-                    placeholder="Scenario name"
-                  />
+                  <div className="flex items-center gap-1">
+                    <input
+                      className="flex-1 font-medium bg-transparent focus:outline-none min-w-0"
+                      value={scenarioNames[s.id] ?? s.name}
+                      onChange={(e) => onScenarioRename(s.id, e.target.value)}
+                      placeholder="Scenario name"
+                      title="✏ Rename scenario"
+                    />
+                    <span className="text-xs opacity-40 pointer-events-none">✏</span>
+                  </div>
                   <div className={`text-xs mt-0.5 leading-snug ${theme.scenarioBtnActiveSub}`}>
                     {s.description}
                   </div>

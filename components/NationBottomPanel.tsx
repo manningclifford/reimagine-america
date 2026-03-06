@@ -94,7 +94,6 @@ export default function NationBottomPanel({ nations, unassignedFips, theme, onNa
               <th className={`px-3 py-1.5 text-left text-xs font-semibold uppercase tracking-widest ${theme.sidebarHeading} whitespace-nowrap`} style={{ minWidth: 110 }}>Area (mi²)</th>
               <th className={`px-3 py-1.5 text-left text-xs font-semibold uppercase tracking-widest ${theme.sidebarHeading} whitespace-nowrap`} style={{ minWidth: 120 }}>Political</th>
               <th className={`px-3 py-1.5 text-left text-xs font-semibold uppercase tracking-widest ${theme.sidebarHeading} whitespace-nowrap`} style={{ minWidth: 130 }}>Race</th>
-              <th style={{ width: 28 }} />
             </tr>
           </thead>
           <tbody>
@@ -102,11 +101,11 @@ export default function NationBottomPanel({ nations, unassignedFips, theme, onNa
               const isPickerOpen = openPickerId === s.id;
               return (
                 <tr key={s.id} className={`border-t ${theme.statsCardDivide}`} style={{ height: 40 }}>
-                  {/* Nation name + color picker */}
+                  {/* Nation name + color picker + X */}
                   <td className="px-2 py-1" style={{ position: "relative" }}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 5 }}>
                       <button
-                        title="Change color"
+                        title="✏ Change color"
                         onClick={() => setOpenPickerId(isPickerOpen ? null : s.id)}
                         style={{ width: 14, height: 14, borderRadius: "50%", backgroundColor: s.color, flexShrink: 0, border: "none", cursor: "pointer", padding: 0 }}
                       />
@@ -116,6 +115,10 @@ export default function NationBottomPanel({ nations, unassignedFips, theme, onNa
                         onChange={(e) => onNationRename(s.id, e.target.value)}
                         title="✏ Click to rename"
                       />
+                      <span className={`text-xs opacity-30 pointer-events-none`}>✏</span>
+                      {nations.length > 1 && (
+                        <button className="text-sm font-bold text-red-400/60 hover:text-red-500 transition-colors flex-shrink-0" onClick={() => onRemoveNation(s.id)} title="Delete nation">✕</button>
+                      )}
                     </div>
                     {/* Color picker popover */}
                     {isPickerOpen && (
@@ -188,12 +191,6 @@ export default function NationBottomPanel({ nations, unassignedFips, theme, onNa
                     )}
                   </td>
 
-                  {/* Remove */}
-                  <td className="px-1 py-1">
-                    {nations.length > 1 && (
-                      <button className="text-sm font-bold text-red-400/60 hover:text-red-500 transition-colors" onClick={() => onRemoveNation(s.id)} title="Delete nation">✕</button>
-                    )}
-                  </td>
                 </tr>
               );
             })}

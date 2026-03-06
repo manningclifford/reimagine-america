@@ -301,6 +301,39 @@ export const SCENARIOS: Scenario[] = [
     ],
   },
 
+  // ── KFC DIVIDE ──────────────────────────────────────────────────────────────
+  {
+    id: "kfc-divide",
+    name: "The KFC Divide",
+    description: "Finger lickin' good geopolitics",
+    nations: [
+      {
+        id: "the-chef",
+        name: "The Chef",
+        color: "#d1d5db",
+        states: ["22","05","29","27"], // LA, AR, MO, MN
+      },
+      {
+        id: "the-tray",
+        name: "The Tray",
+        color: "#6b7280",
+        states: ["47"], // TN
+      },
+      {
+        id: "the-chicken",
+        name: "The Chicken",
+        color: "#f97316",
+        states: ["21"], // KY
+      },
+      {
+        id: "chefs-face",
+        name: "Chef's Face",
+        color: "#fde68a",
+        states: ["19"], // IA
+      },
+    ],
+  },
+
   // ── BLANK CANVAS ────────────────────────────────────────────────────────────
   {
     id: "blank",
